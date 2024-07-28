@@ -1,4 +1,8 @@
 defmodule Game.Queue.QueueSupervisor do
+  @moduledoc """
+    This module is responsible for queue supervisor.
+  """
+
   use Supervisor
 
   def start_link(_args) do

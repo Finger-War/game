@@ -1,5 +1,11 @@
 defmodule Game.Queue.QueueMatch do
+  @moduledoc """
+    This module is responsible for match queue players.
+  """
+
   use GenServer
+
+  alias Game.Queue.QueueManager
 
   @interval 1000
 
@@ -32,12 +38,12 @@ defmodule Game.Queue.QueueMatch do
   end
 
   defp select_two_players_from_queue do
-    queue = Game.Queue.QueueManager.list_queue()
+    queue = QueueManager.list_queue()
 
     case queue do
       [player_one, player_two | _] ->
-        Game.Queue.QueueManager.remove_from_queue(player_one)
-        Game.Queue.QueueManager.remove_from_queue(player_two)
+        QueueManager.remove_from_queue(player_one)
+        QueueManager.remove_from_queue(player_two)
         {:ok, {player_one, player_two}}
 
       _ ->

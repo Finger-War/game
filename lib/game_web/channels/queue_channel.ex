@@ -1,6 +1,11 @@
 defmodule GameWeb.QueueChannel do
-  alias Game.Queue.QueueManager
+  @moduledoc """
+    This module is responsible for queue channel.
+  """
+
   use GameWeb, :channel
+
+  alias Game.Queue.QueueManager
 
   @impl true
   def join("queue:lobby", _payload, socket) do

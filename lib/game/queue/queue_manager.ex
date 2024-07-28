@@ -1,4 +1,8 @@
 defmodule Game.Queue.QueueManager do
+  @moduledoc """
+    This module is responsible for queue manager.
+  """
+
   use GenServer
 
   def start_link(_args) do

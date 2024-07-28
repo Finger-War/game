@@ -1,4 +1,8 @@
 defmodule Game.Application do
+  @moduledoc """
+    This module is responsible for game application start.
+  """
+
   use Application
 
   @impl true
