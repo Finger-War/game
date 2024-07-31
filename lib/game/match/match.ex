@@ -7,7 +7,7 @@ defmodule Game.Match.Match do
 
   use GenServer
 
-  @duration 10_000
+  @duration 60_000
 
   def start_link({player_one, player_two}) do
     GenServer.start_link(__MODULE__, {player_one, player_two}, name: via(player_one, player_two))
