@@ -1,11 +1,12 @@
-defmodule Game.Queue.QueueMatch do
+defmodule Game.Queue.Queue do
   @moduledoc """
-    This module is responsible for match queue players.
+    This module is responsible for queue.
   """
 
   use GenServer
 
   alias Game.Queue.QueueManager
+  alias Game.Match.MatchManager
 
   @interval 1000
 
@@ -28,7 +29,7 @@ defmodule Game.Queue.QueueMatch do
   defp generate_queue_matches do
     case select_two_players_from_queue() do
       {:ok, {player_one, player_two}} ->
-        IO.puts("Match between #{player_one} and #{player_two}")
+        MatchManager.create_match(player_one, player_two)
 
         generate_queue_matches()
 

@@ -12,7 +12,7 @@ defmodule Game.Queue.QueueSupervisor do
   def init(:ok) do
     children = [
       Game.Queue.QueueManager,
-      Game.Queue.QueueMatch
+      Game.Queue.Queue
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

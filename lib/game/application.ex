@@ -10,6 +10,9 @@ defmodule Game.Application do
     children = [
       GameWeb.Endpoint,
       Game.Queue.QueueSupervisor,
+      {DynamicSupervisor, strategy: :one_for_one, name: Game.Match.MatchSupervisor},
+      {Game.Match.MatchManager, []},
+      {Registry, keys: :unique, name: Game.Match.Registry},
       {DNSCluster, query: Application.get_env(:game, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Game.PubSub},
       {Finch, name: Game.Finch},
