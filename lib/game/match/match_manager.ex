@@ -1,4 +1,8 @@
 defmodule Game.Match.MatchManager do
+  @moduledoc """
+    This module is responsible for match manager.
+  """
+
   use GenServer
 
   def start_link(_args) do

@@ -1,4 +1,8 @@
 defmodule Game.Match.MatchSupervisor do
+  @moduledoc """
+    This module is responsible for match supervisor.
+  """
+
   use DynamicSupervisor
 
   def start_link(_args) do

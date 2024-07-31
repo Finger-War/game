@@ -1,4 +1,8 @@
 defmodule Game.Match.Match do
+  @moduledoc """
+    This module is responsible for match.
+  """
+
   alias Game.Match.MatchSupervisor
 
   use GenServer
