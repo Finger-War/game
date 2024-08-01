@@ -14,7 +14,7 @@ defmodule Game.Match.Match do
   end
 
   defp via(player_one, player_two) do
-    {:via, Registry, {Game.Match.Registry, {player_one, player_two}}}
+    {:via, Registry, {Game.Match.MatchRegistry, {player_one, player_two}}}
   end
 
   def init({player_one, player_two}) do
