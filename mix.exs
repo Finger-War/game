@@ -33,6 +33,7 @@ defmodule Game.MixProject do
   defp deps do
     [
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:dns_cluster, "~> 0.1.3"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:swoosh, "~> 1.5"},
@@ -41,7 +42,6 @@ defmodule Game.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"}
     ]
   end
