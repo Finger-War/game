@@ -4,6 +4,7 @@ defmodule Game.Queue.Queue do
   """
 
   use GenServer
+  require Logger
 
   alias Game.Queue.QueueManager
   alias Game.Match.MatchManager
@@ -11,7 +12,17 @@ defmodule Game.Queue.Queue do
   @interval 1000
 
   def start_link(_args) do
-    GenServer.start_link(__MODULE__, [], name: {:global, __MODULE__})
+    case GenServer.start_link(__MODULE__, [], name: {:global, __MODULE__}) do
+      {:ok, pid} ->
+        node = :erlang.node(pid)
+        Logger.info("Queue started on #{node}")
+        {:ok, pid}
+
+      {:error, {:already_started, pid}} ->
+        node = :erlang.node(pid)
+        Logger.warning("Queue already started on #{node}")
+        {:ok, pid}
+    end
   end
 
   def init(state) do
