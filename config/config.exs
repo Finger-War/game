@@ -3,6 +3,20 @@ import Config
 config :game,
   generators: [timestamp_type: :utc_datetime]
 
+config :libcluster,
+  topologies: [
+    Dynamic_Game: [
+      strategy: Cluster.Strategy.Gossip,
+      config: [
+        port: 45892,
+        multicast_addr: "255.255.255.255",
+        multicast_ttl: 1,
+        if_addr: {0, 0, 0, 0},
+        ifaces: :default
+      ]
+    ]
+  ]
+
 config :game, GameWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,

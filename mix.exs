@@ -32,6 +32,7 @@ defmodule Game.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
+      {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.1.3"},
       {:phoenix, "~> 1.7.14"},
@@ -42,7 +43,7 @@ defmodule Game.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:bandit, "~> 1.5"}
+      {:libcluster, "~> 3.3.3"}
     ]
   end
 

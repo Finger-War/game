@@ -7,7 +7,10 @@ defmodule Game.Application do
 
   @impl true
   def start(_type, _args) do
+    topologies = Application.get_env(:libcluster, :topologies)
+
     children = [
+      {Cluster.Supervisor, [topologies, [name: Game.ClusterSupervisor]]},
       GameWeb.Endpoint,
       Game.Queue.QueueSupervisor,
       {DynamicSupervisor, strategy: :one_for_one, name: Game.Match.MatchSupervisor},
@@ -20,6 +23,7 @@ defmodule Game.Application do
     ]
 
     opts = [strategy: :one_for_one, name: Game.Supervisor]
+
     Supervisor.start_link(children, opts)
   end
 
