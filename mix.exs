@@ -19,7 +19,8 @@ defmodule Game.MixProject do
   def application do
     [
       mod: {Game.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools],
+      start_phases: [{:queue_phase, []}]
     ]
   end
 
@@ -35,6 +36,7 @@ defmodule Game.MixProject do
       {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:dns_cluster, "~> 0.1.3"},
+      {:horde, "~> 0.9.0"},
       {:phoenix, "~> 1.7.14"},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:swoosh, "~> 1.5"},
