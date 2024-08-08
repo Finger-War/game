@@ -5,10 +5,6 @@ config :game, GameWeb.Endpoint,
   secret_key_base: "zbfG39uJK2UaB/EFEiyHx/7xWdEwfl63rsjnQv98umlAXjESFYizIbIZ09JGIEXx",
   server: false
 
-config :game, Game.Mailer, adapter: Swoosh.Adapters.Test
-
-config :swoosh, :api_client, false
-
 config :logger, level: :warning
 
 config :phoenix, :plug_init_mode, :runtime

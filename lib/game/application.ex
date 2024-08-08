@@ -20,7 +20,6 @@ defmodule Game.Application do
       {Game.Match.MatchManager, []},
       {Registry, keys: :unique, name: Game.Match.MatchRegistry},
       {Phoenix.PubSub, name: Game.PubSub},
-      {Finch, name: Game.Finch},
       GameWeb.Telemetry
     ]
 

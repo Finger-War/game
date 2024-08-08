@@ -27,8 +27,6 @@ config :game, GameWeb.Endpoint,
   pubsub_server: Game.PubSub,
   live_view: [signing_salt: "9QIndD7D"]
 
-config :game, Game.Mailer, adapter: Swoosh.Adapters.Local
-
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
