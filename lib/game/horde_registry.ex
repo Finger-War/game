@@ -9,10 +9,21 @@ defmodule Game.HordeRegistry do
     Horde.Registry.start_link(__MODULE__, [keys: :unique], name: __MODULE__)
   end
 
-  def init(init_arg) do
+  def init(args) do
     [members: members()]
-    |> Keyword.merge(init_arg)
+    |> Keyword.merge(args)
     |> Horde.Registry.init()
+  end
+
+  def register_player(player, match_pid) do
+    Horde.Registry.register(__MODULE__, player, match_pid)
+  end
+
+  def get_match_pid_by_player(player) do
+    case Horde.Registry.lookup(__MODULE__, player) do
+      [{pid, _}] -> pid
+      _ -> nil
+    end
   end
 
   defp members() do

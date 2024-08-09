@@ -3,7 +3,7 @@ defmodule GameWeb.MatchChannel do
     This module is responsible for match channel.
   """
 
-  alias Game.Match.MatchRegistry
+  alias Game.HordeRegistry
   alias Game.Match.Match
 
   use GameWeb, :channel
@@ -15,8 +15,7 @@ defmodule GameWeb.MatchChannel do
 
   @impl true
   def handle_in("new_word", %{"player" => player, "word" => word}, socket) do
-    match_pid = MatchRegistry.get_match_pid_by_player(player)
-
+    match_pid = HordeRegistry.get_match_pid_by_player(player)
     Match.add_word(match_pid, player, word)
 
     {:noreply, socket}

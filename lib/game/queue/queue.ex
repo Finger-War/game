@@ -26,14 +26,14 @@ defmodule Game.Queue.Queue do
   end
 
   def init(state) do
-    schedule_queue_match()
+    schedule()
     {:ok, state}
   end
 
   def handle_info(:queue_match, state) do
     generate_queue_matches()
 
-    schedule_queue_match()
+    schedule()
     {:noreply, state}
   end
 
@@ -63,7 +63,7 @@ defmodule Game.Queue.Queue do
     end
   end
 
-  defp schedule_queue_match do
+  defp schedule do
     Process.send_after(self(), :queue_match, @interval)
   end
 end

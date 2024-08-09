@@ -3,25 +3,31 @@ defmodule Game.Match.Match do
     This module is responsible for match.
   """
 
-  alias Game.Match.MatchSupervisor
-  alias Game.Match.MatchRegistry
-
   use GenServer
+  require Logger
+
+  alias Game.Match.MatchSupervisor
+  alias Game.HordeRegistry
 
   @duration 60_000
 
   def start_link({player_one, player_two}) do
-    GenServer.start_link(__MODULE__, {player_one, player_two}, name: via(player_one, player_two))
-  end
+    case GenServer.start_link(__MODULE__, {player_one, player_two},
+           name: via_tuple(player_one, player_two)
+         ) do
+      {:ok, pid} ->
+        node = :erlang.node(pid)
+        Logger.info("Match started on #{node}")
 
-  defp via(player_one, player_two) do
-    {:via, Registry, {Game.Match.MatchRegistry, {player_one, player_two}}}
+      {:error, {:already_started, pid}} ->
+        node = :erlang.node(pid)
+        Logger.warning("Match already started on #{node}")
+    end
   end
 
   def init({player_one, player_two}) do
-    IO.puts("Match started between #{player_one} and #{player_two}")
-    MatchRegistry.register_player(player_one, self())
-    MatchRegistry.register_player(player_two, self())
+    HordeRegistry.register_player(player_one, self())
+    HordeRegistry.register_player(player_two, self())
 
     schedule()
 
@@ -33,6 +39,10 @@ defmodule Game.Match.Match do
        words: [],
        result: %{}
      }}
+  end
+
+  defp via_tuple(player_one, player_two) do
+    {:via, Horde.Registry, {HordeRegistry, {player_one, player_two}}}
   end
 
   def add_word(match_pid, player, word) do

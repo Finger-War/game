@@ -4,9 +4,20 @@ defmodule Game.Match.MatchManager do
   """
 
   use GenServer
+  require Logger
 
   def start_link(_args) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+    case GenServer.start_link(__MODULE__, %{}, name: __MODULE__) do
+      {:ok, pid} ->
+        node = :erlang.node(pid)
+        Logger.info("Match Manager started on #{node}")
+        {:ok, pid}
+
+      {:error, {:already_started, pid}} ->
+        node = :erlang.node(pid)
+        Logger.warning("Match Manager already started on #{node}")
+        {:ok, pid}
+    end
   end
 
   def init(state) do

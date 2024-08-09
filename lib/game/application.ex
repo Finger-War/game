@@ -15,10 +15,10 @@ defmodule Game.Application do
       {Horde.Registry, [name: Game.HordeRegistry, keys: :unique, members: :auto]},
       {Horde.DynamicSupervisor,
        [name: Game.HordeSupervisor, strategy: :one_for_one, members: :auto]},
+      {Game.NodeObserver, []},
       GameWeb.Endpoint,
       {DynamicSupervisor, strategy: :one_for_one, name: Game.Match.MatchSupervisor},
       {Game.Match.MatchManager, []},
-      {Registry, keys: :unique, name: Game.Match.MatchRegistry},
       {Phoenix.PubSub, name: Game.PubSub},
       GameWeb.Telemetry
     ]
@@ -36,18 +36,8 @@ defmodule Game.Application do
 
   @impl true
   def start_phase(:queue_phase, _start_type, _args) do
-    add_race_condition(1000)
+    :timer.sleep(:rand.uniform(1000))
 
-    start_queue_supervisor()
-
-    :ok
-  end
-
-  defp add_race_condition(time) do
-    :timer.sleep(:rand.uniform(time))
-  end
-
-  defp start_queue_supervisor do
     case :global.whereis_name(Game.Queue.QueueSupervisor) do
       :undefined ->
         Horde.DynamicSupervisor.start_child(Game.HordeSupervisor, Game.Queue.QueueSupervisor)
@@ -56,5 +46,7 @@ defmodule Game.Application do
         node = :erlang.node(pid)
         Logger.warning("Queue supervisor already started: #{node}")
     end
+
+    :ok
   end
 end
