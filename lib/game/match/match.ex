@@ -18,10 +18,12 @@ defmodule Game.Match.Match do
       {:ok, pid} ->
         node = :erlang.node(pid)
         Logger.info("Match started on #{node}")
+        {:ok, pid}
 
       {:error, {:already_started, pid}} ->
         node = :erlang.node(pid)
         Logger.warning("Match already started on #{node}")
+        {:error, {:already_started, pid}}
     end
   end
 
