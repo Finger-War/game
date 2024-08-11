@@ -7,7 +7,7 @@ defmodule Game.NodeObserver do
 
   alias Game.{HordeRegistry, HordeSupervisor}
 
-  def start_link(_), do: GenServer.start_link(__MODULE__, [])
+  def start_link(_), do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
 
   def init(_) do
     :net_kernel.monitor_nodes(true, node_type: :visible)
