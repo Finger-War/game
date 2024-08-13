@@ -6,6 +6,7 @@ defmodule Game.NodeObserver do
   use GenServer
 
   alias Game.{HordeRegistry, HordeSupervisor}
+  alias Game.Match.MatchSupervisor
 
   def start_link(_), do: GenServer.start_link(__MODULE__, [], name: __MODULE__)
 
@@ -18,6 +19,7 @@ defmodule Game.NodeObserver do
   def handle_info({:nodeup, _node, _node_type}, state) do
     set_members(HordeRegistry)
     set_members(HordeSupervisor)
+    set_members(MatchSupervisor)
 
     {:noreply, state}
   end
@@ -25,6 +27,7 @@ defmodule Game.NodeObserver do
   def handle_info({:nodedown, _node, _node_type}, state) do
     set_members(HordeRegistry)
     set_members(HordeSupervisor)
+    set_members(MatchSupervisor)
 
     {:noreply, state}
   end

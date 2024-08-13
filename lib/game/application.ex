@@ -12,12 +12,11 @@ defmodule Game.Application do
 
     children = [
       {Cluster.Supervisor, [topologies, [name: Game.ClusterSupervisor]]},
-      {Horde.Registry, [name: Game.HordeRegistry, keys: :unique, members: :auto]},
-      {Horde.DynamicSupervisor,
-       [name: Game.HordeSupervisor, strategy: :one_for_one, members: :auto]},
+      {Horde.Registry, [name: Game.HordeRegistry, keys: :unique]},
+      {Horde.DynamicSupervisor, [name: Game.HordeSupervisor, strategy: :one_for_one]},
       {Game.NodeObserver, []},
       GameWeb.Endpoint,
-      {DynamicSupervisor, strategy: :one_for_one, name: Game.Match.MatchSupervisor},
+      {Game.Match.MatchSupervisor, []},
       {Game.Match.MatchManager, []},
       {Phoenix.PubSub, name: Game.PubSub},
       GameWeb.Telemetry
