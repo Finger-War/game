@@ -17,7 +17,7 @@ defmodule GameWeb.Router do
   scope "/", GameWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", PageLive, :home
   end
 
   if Application.compile_env(:game, :dev_routes) do

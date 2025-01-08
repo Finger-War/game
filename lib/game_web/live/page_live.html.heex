@@ -1,0 +1,14 @@
+<div class="flex flex-col justify-center items-center h-screen space-y-4">
+  <h1>Hello, Fingerwar!</h1>
+
+  <%= if @in_queue do %>
+    <p>Você entrou na fila! (ID: <%= @player_id %>)</p>
+    <button phx-click="leave_queue">
+      Sair da Fila
+    </button>
+  <% else %>
+    <.button phx-click="join_queue">
+      Entrar na Fila
+    </.button>
+  <% end %>
+</div>
