@@ -20,5 +20,5 @@ defmodule GameWeb.Gettext do
 
   See the [Gettext Docs](https://hexdocs.pm/gettext) for detailed usage.
   """
-  use Gettext, otp_app: :game
+  use Gettext.Backend, otp_app: :game
 end

@@ -12,10 +12,6 @@ defmodule GameWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  socket "/socket", GameWeb.PlayerSocket,
-    websocket: true,
-    longpoll: false
-
   plug Plug.Static,
     at: "/",
     from: :game,
@@ -23,6 +19,9 @@ defmodule GameWeb.Endpoint do
     only: GameWeb.static_paths()
 
   if code_reloading? do
+    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+
+    plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
   end
 
