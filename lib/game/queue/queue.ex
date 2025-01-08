@@ -40,6 +40,11 @@ defmodule Game.Queue.Queue do
   defp generate_queue_matches do
     case select_two_players_from_queue() do
       {:ok, {player_one, player_two}} ->
+        GameWeb.Endpoint.broadcast("game:queue", "match_started", %{
+          player_one: player_one,
+          player_two: player_two
+        })
+
         MatchManager.create_match(player_one, player_two)
 
         generate_queue_matches()

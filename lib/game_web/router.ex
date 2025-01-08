@@ -18,6 +18,7 @@ defmodule GameWeb.Router do
     pipe_through :browser
 
     live "/", PageLive, :home
+    live "/match", MatchLive, :match
   end
 
   if Application.compile_env(:game, :dev_routes) do

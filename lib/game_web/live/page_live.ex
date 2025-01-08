@@ -2,11 +2,16 @@ defmodule GameWeb.PageLive do
   use GameWeb, :live_view
 
   alias GameWeb.CoreComponents
-  alias Phoenix.PubSub
   alias Game.Queue.QueueManager
 
+  @topic "game:queue"
+
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, in_queue: false, player_id: nil)}
+    if connected?(socket) do
+      GameWeb.Endpoint.subscribe(@topic)
+    end
+
+    {:ok, assign(socket, in_queue: false, player_id: nil, match_started: false)}
   end
 
   def handle_event("join_queue", _params, socket) do
@@ -23,5 +28,15 @@ defmodule GameWeb.PageLive do
     QueueManager.remove_from_queue(player_id)
 
     {:noreply, assign(socket, in_queue: false, player_id: nil)}
+  end
+
+  def handle_info(%{event: "match_started", payload: %{player_one: player_one, player_two: player_two}}, socket) do
+    current_player = socket.assigns.player_id
+
+    if current_player in [player_one, player_two] do
+      {:noreply, socket |> assign(match_started: true) |> redirect(to: ~p"/match")}
+    else
+      {:noreply, socket}
+    end
   end
 end
