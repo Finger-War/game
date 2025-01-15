@@ -39,4 +39,13 @@ defmodule GameWeb.PageLive do
       {:noreply, socket}
     end
   end
+
+  def terminate(_reason, socket) do
+    player_id = socket.assigns.player_id
+
+    QueueManager.remove_from_queue(player_id)
+    GameWeb.Endpoint.unsubscribe(@topic)
+
+    {:ok, socket}
+  end
 end
