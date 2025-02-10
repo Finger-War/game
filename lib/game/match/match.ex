@@ -10,6 +10,7 @@ defmodule Game.Match.Match do
   alias Game.HordeRegistry
 
   @duration 60_000
+  @topic "game:match"
 
   def start_link({player_one, player_two}) do
     case GenServer.start_link(__MODULE__, {player_one, player_two},
@@ -64,6 +65,12 @@ defmodule Game.Match.Match do
   def handle_info(:finish, state) do
     IO.puts("Match finished between #{state.player_one} and #{state.player_two}")
     IO.puts("Result: #{inspect(state.result)}")
+
+    GameWeb.Endpoint.broadcast(@topic, "match_finished", %{
+      player_one: state.player_one,
+      player_two: state.player_two,
+      result: state.result
+    })
 
     MatchSupervisor.stop_match(self())
 
