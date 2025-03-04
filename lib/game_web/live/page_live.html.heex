@@ -1,14 +1,121 @@
-<div class="flex flex-col justify-center items-center h-screen space-y-4">
-  <h1>Hello, Fingerwar!</h1>
+<div class="flex flex-col justify-center items-center min-h-screen bg-gradient-to-b from-indigo-900 to-purple-900 text-white p-4">
+  <div class="flex flex-col items-center w-full max-w-2xl">
+    <!-- Game Logo and Header -->
+    <div class="mb-10 text-center">
+      <div class="text-5xl font-bold mb-2 text-yellow-400 flex justify-center items-center">
+        <i class="fas fa-keyboard mr-3 text-4xl"></i>
+        FINGERWAR
+      </div>
+      <p class="text-blue-300 text-xl">The distributed typing battle</p>
+    </div>
+    
+    <!-- Node Status Card -->
+    <div class="w-full mb-8">
+      <.live_component 
+        module={GameWeb.Live.Components.NodeStatusComponent} 
+        id="node-status" 
+      />
+    </div>
 
-  <%= if @in_queue do %>
-    <p>Você entrou na fila! (ID: <%= @player_id %>)</p>
-    <button phx-click="leave_queue">
-      Sair da Fila
-    </button>
-  <% else %>
-    <.button phx-click="join_queue">
-      Entrar na Fila
-    </.button>
-  <% end %>
+    <!-- Game Queue Area -->
+    <div class="w-full bg-gray-900 bg-opacity-50 rounded-xl overflow-hidden shadow-xl border border-indigo-800">
+      <!-- Game Queue Header -->
+      <div class="bg-gray-800 p-4 border-b border-indigo-900">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xl font-bold text-blue-300">
+            <i class="fas fa-users mr-2"></i> Game Queue
+          </h2>
+          <div class="flex items-center">
+            <div class={[
+              "h-3 w-3 rounded-full mr-2",
+              @queue_count > 0 && "bg-green-500 animate-pulse" || "bg-gray-600"
+            ]}></div>
+            <span class="text-sm text-gray-300">
+              <span class="font-bold text-white"><%= @queue_count %></span> players waiting
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Game Queue Body -->
+      <div class="p-6">
+        <%= if @in_queue do %>
+          <div class="bg-blue-900 bg-opacity-50 rounded-lg p-6 border border-blue-700 text-center">
+            <div class="text-2xl font-bold mb-4 text-blue-300">You're in the Queue!</div>
+            
+            <!-- Player ID Display -->
+            <div class="mb-6 bg-black bg-opacity-30 rounded-lg p-3 inline-block">
+              <div class="text-xs text-blue-300 mb-1">YOUR ID</div>
+              <div class="font-mono text-yellow-300 font-bold"><%= @player_id %></div>
+            </div>
+
+            <!-- Loading Animation -->
+            <div class="flex justify-center items-center mb-6">
+              <div class="relative">
+                <div class="w-16 h-16 border-4 border-blue-600 border-t-blue-300 rounded-full animate-spin"></div>
+                <div class="absolute top-0 left-0 w-16 h-16 flex items-center justify-center text-blue-300">
+                  <i class="fas fa-crosshairs"></i>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-lg mb-6 text-gray-300">
+              <div class="animate-pulse"><i class="fas fa-satellite-dish text-blue-400 mr-2"></i> Searching for opponent...</div>
+              <div class="text-sm mt-2">This won't take long</div>
+            </div>
+
+            <button phx-click="leave_queue" class="py-3 px-6 bg-red-800 hover:bg-red-700 text-white rounded-lg transition flex items-center justify-center shadow-lg border border-red-900">
+              <i class="fas fa-times-circle mr-2"></i> Leave Queue
+            </button>
+          </div>
+        <% else %>
+          <div class="text-center py-6">
+            <!-- Game Description -->
+            <div class="mb-8 text-gray-300 max-w-md mx-auto">
+              <p class="mb-4">Challenge your typing speed against other players in real-time. The fastest typist wins!</p>
+              <div class="flex justify-center space-x-4 text-sm">
+                <div class="flex items-center"><i class="fas fa-bolt text-yellow-400 mr-1"></i> Fast-paced</div>
+                <div class="flex items-center"><i class="fas fa-server text-yellow-400 mr-1"></i> Distributed</div>
+                <div class="flex items-center"><i class="fas fa-trophy text-yellow-400 mr-1"></i> Competitive</div>
+              </div>
+            </div>
+            
+            <!-- Join Button -->
+            <button phx-click="join_queue" class="py-4 px-8 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white text-xl font-bold rounded-lg transition transform hover:scale-105 flex items-center justify-center shadow-xl border border-green-900 home-button-glow">
+              <i class="fas fa-play-circle mr-2"></i> JOIN BATTLE
+            </button>
+          </div>
+        <% end %>
+      </div>
+      
+      <!-- Game Stats Footer -->
+      <div class="bg-gray-800 p-3 border-t border-indigo-900 flex justify-between items-center text-xs text-gray-400">
+        <div>
+          <i class="fas fa-signal mr-1"></i> Server status: <span class="text-green-400">Online</span>
+        </div>
+        <div>
+          <i class="fas fa-clock mr-1"></i> Avg. wait time: <span class="text-white">~15 seconds</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Instructions -->
+    <div class="w-full mt-8 bg-gray-900 bg-opacity-50 rounded-lg p-4 border border-indigo-800">
+      <h3 class="font-bold text-blue-300 mb-2 flex items-center">
+        <i class="fas fa-info-circle mr-2"></i> How to Play
+      </h3>
+      <ul class="text-sm text-gray-300 space-y-2 ml-6 list-disc">
+        <li>Join the queue and wait to be matched with an opponent</li>
+        <li>When matched, you'll be presented with a list of words</li>
+        <li>Type as many words as possible before the timer runs out</li>
+        <li>The player who types more words correctly wins!</li>
+      </ul>
+    </div>
+    
+    <!-- Footer -->
+    <div class="mt-8 text-center text-xs text-indigo-300 opacity-70">
+      <div>Powered by Phoenix LiveView and Elixir</div>
+      <div class="mt-1">Distributed across <%= length(Node.list()) + 1 %> nodes</div>
+    </div>
+  </div>
 </div>

@@ -40,13 +40,19 @@ defmodule Game.Queue.Queue do
   defp generate_queue_matches do
     case select_two_players_from_queue() do
       {:ok, {player_one, player_two}} ->
+        # Log this for debugging
+        Logger.info("Creating match between #{player_one} and #{player_two}")
+
+        # First notify queue subscribers that players have been matched
         GameWeb.Endpoint.broadcast("game:queue", "match_started", %{
           player_one: player_one,
           player_two: player_two
         })
 
+        # Create the actual match
         MatchManager.create_match(player_one, player_two)
 
+        # Continue matching players
         generate_queue_matches()
 
       :error ->

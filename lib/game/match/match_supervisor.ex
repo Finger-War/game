@@ -1,9 +1,10 @@
 defmodule Game.Match.MatchSupervisor do
   @moduledoc """
-    This module is responsible for match supervisor.
+  Distributed supervisor for match processes across the cluster.
   """
 
   use Horde.DynamicSupervisor
+  require Logger
 
   def start_link(_) do
     Horde.DynamicSupervisor.start_link(__MODULE__, [strategy: :one_for_one], name: __MODULE__)
@@ -15,15 +16,46 @@ defmodule Game.Match.MatchSupervisor do
     |> Horde.DynamicSupervisor.init()
   end
 
-  def start_match(player_one, player_two) do
-    Horde.DynamicSupervisor.start_child(__MODULE__, {Game.Match.Match, {player_one, player_two}})
+  def members() do
+    [Node.self() | Node.list()]
+    |> Enum.map(fn node -> {__MODULE__, node} end)
   end
 
-  def stop_match(pid) do
+  def start_match(player_one, player_two) do
+    Logger.info("Starting match between #{player_one} and #{player_two}")
+    child_spec = {Game.Match.Match, {player_one, player_two}}
+    Horde.DynamicSupervisor.start_child(__MODULE__, child_spec)
+  end
+
+  def stop_match(pid) when is_pid(pid) do
+    Logger.info("Stopping match process #{inspect(pid)}")
     Horde.DynamicSupervisor.terminate_child(__MODULE__, pid)
   end
 
-  defp members() do
-    Enum.map([Node.self() | Node.list()], &{__MODULE__, &1})
+  def delete_match(player_one, player_two) do
+    Logger.info("Deleting match between #{player_one} and #{player_two}")
+
+    # Try to find the match PID through the registry
+    key = {:match, player_one, player_two}
+
+    case Horde.Registry.lookup(Game.HordeRegistry, key) do
+      [{pid, _}] ->
+        Logger.info("Found match process, terminating: #{inspect(pid)}")
+        stop_match(pid)
+
+      [] ->
+        Logger.warning("Match not found in registry: #{player_one}-#{player_two}")
+        :not_found
+    end
+  end
+
+  # Handle the case when a node joins or leaves the cluster
+  def handle_topology_change(nodes) do
+    Logger.info("Topology change detected: #{inspect(nodes)}")
+    set_members(members())
+  end
+
+  def set_members(members) do
+    Horde.DynamicSupervisor.set_members(__MODULE__, members)
   end
 end

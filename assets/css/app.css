@@ -1,3 +1,68 @@
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
+
+/* Game animations */
+@keyframes spark {
+  0% { opacity: 0; transform: scale(0.5); }
+  50% { opacity: 1; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@keyframes completed-word {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes button-glow {
+  0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
+  50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.8); }
+  100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.5); }
+}
+
+.animate-spark {
+  animation: spark 1s ease-in-out infinite;
+}
+
+.animate-completed-word {
+  animation: completed-word 0.5s ease-out;
+}
+
+/* Home page specific styles */
+.home-button-glow {
+  animation: button-glow 3s ease-in-out infinite;
+}
+
+/* Timer styles */
+.countdown-number {
+  font-size: 1.5rem;
+  font-weight: bold;
+  min-width: 2rem;
+  text-align: center;
+}
+
+/* Word items */
+.word-item {
+  transition: all 0.2s ease;
+}
+
+.word-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.word-completed {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Game container elements */
+.game-container {
+  min-height: 100vh;
+}
+
+/* Background pattern for game container */
+.game-pattern-bg {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234338ca' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}

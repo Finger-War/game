@@ -14,6 +14,15 @@ config :libcluster,
         if_addr: {0, 0, 0, 0},
         ifaces: :default
       ]
+    ],
+    game_cluster: [
+      strategy: Cluster.Strategy.Gossip,
+      config: [
+        port: 45892,
+        if_addr: "0.0.0.0",
+        multicast_addr: "230.1.1.1",
+        multicast_ttl: 1
+      ]
     ]
   ]
 

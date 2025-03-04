@@ -29,7 +29,32 @@ defmodule Game.Match.MatchManager do
   end
 
   def handle_call({:create_match, player_one, player_two}, _from, state) do
-    Game.Match.MatchSupervisor.start_match(player_one, player_two)
-    {:reply, :ok, state}
+    # Check if either player is already in a match
+    player_one_in_match = Game.HordeRegistry.lookup_player(player_one) != :error
+    player_two_in_match = Game.HordeRegistry.lookup_player(player_two) != :error
+
+    cond do
+      player_one_in_match ->
+        Logger.warning("Player #{player_one} is already in a match. Skipping match creation.")
+        {:reply, {:error, :player_already_in_match}, state}
+
+      player_two_in_match ->
+        Logger.warning("Player #{player_two} is already in a match. Skipping match creation.")
+        {:reply, {:error, :player_already_in_match}, state}
+
+      true ->
+        # Both players are free, create the match
+        result = Game.Match.MatchSupervisor.start_match(player_one, player_two)
+
+        case result do
+          {:ok, _pid} ->
+            Logger.info("Successfully created match between #{player_one} and #{player_two}")
+            {:reply, result, state}
+
+          error ->
+            Logger.error("Failed to create match: #{inspect(error)}")
+            {:reply, error, state}
+        end
+    end
   end
 end

@@ -15,10 +15,10 @@ defmodule Game.Application do
       {Horde.Registry, [name: Game.HordeRegistry, keys: :unique]},
       {Horde.DynamicSupervisor, [name: Game.HordeSupervisor, strategy: :one_for_one]},
       {Game.NodeObserver, []},
-      GameWeb.Endpoint,
       {Game.Match.MatchSupervisor, []},
       {Game.Match.MatchManager, []},
       {Phoenix.PubSub, name: Game.PubSub},
+      GameWeb.Endpoint,
       GameWeb.Telemetry
     ]
 
