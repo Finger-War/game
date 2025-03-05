@@ -23,9 +23,13 @@ import { Socket } from "phoenix"
 import { LiveSocket } from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import SoundManager from "./sounds"
+import typingAnimation from "./typing_animation"
 
 // Initialize the sound manager once
 const soundManager = SoundManager.initialize();
+
+// Initialize typing animation
+typingAnimation.initialize();
 
 // Define hooks for LiveView
 let Hooks = {}
@@ -119,7 +123,6 @@ Hooks.GameInput = {
     
     this.feedback.classList.remove("hidden");
     
-    // Hide feedback after animation
     setTimeout(() => {
       this.feedback.classList.add("hidden");
     }, 300);
