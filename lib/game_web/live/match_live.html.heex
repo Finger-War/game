@@ -62,7 +62,15 @@
           <h3 class="text-lg mb-2 font-bold text-blue-300">Available Words:</h3>
           <div class="flex flex-wrap gap-2">
             <%= for word <- @words do %>
-              <div class="word-item px-3 py-1.5 rounded-lg bg-blue-800 hover:bg-blue-700 transition">
+              <div class={[
+                "word-item px-3 py-1.5 rounded-lg transition",
+                cond do
+                  @current_target_word == word -> "bg-blue-600 border-2 border-white font-bold animate-pulse"
+                  Map.get(@word_statuses, word) == :correct -> "bg-green-600"
+                  Map.get(@word_statuses, word) == :incorrect -> "bg-red-600"
+                  true -> "bg-blue-800 hover:bg-blue-700"
+                end
+              ]}>
                 <%= word %>
               </div>
             <% end %>
@@ -115,7 +123,7 @@
       </div>
     </div>
     
-    <!-- Central Input Field - NEW SECTION -->
+    <!-- Central Input Field -->
     <div class="central-input-area absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 w-5/6 max-w-xl">
       <!-- Versus indicator above input -->
       <div class="versus-indicator absolute -top-12 left-1/2 transform -translate-x-1/2 z-10">
@@ -127,7 +135,11 @@
       <!-- Game input form -->
       <div class="game-input-wrapper bg-black bg-opacity-50 p-4 rounded-xl border-2 border-indigo-500 shadow-lg">
         <h3 class="text-center text-white font-bold mb-3">
-          TYPE THE WORDS BELOW TO SCORE
+          <%= if @current_target_word do %>
+            TYPE: <span class="text-yellow-300"><%= @current_target_word %></span>
+          <% else %>
+            TYPE THE WORDS ABOVE TO SCORE
+          <% end %>
         </h3>
         
         <form phx-submit="type" phx-change="input_change" class="relative">

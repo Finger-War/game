@@ -86,15 +86,22 @@ Hooks.GameInput = {
       soundManager.play('start_match');
     });
     
-    // Handle form submission feedback
-    this.handleEvent("word_result", ({ result }) => {
+    // Handle form submission feedback with specific word highlighting
+    this.handleEvent("word_result", ({ result, word }) => {
       if (result === "correct") {
         this.showFeedback("correct");
         soundManager.play('correct');
+        this.highlightWord(word, "correct");
       } else {
         this.showFeedback("incorrect");
         soundManager.play('incorrect');
+        this.highlightWord(word, "incorrect");
       }
+      
+      // Focus back on the input field
+      setTimeout(() => {
+        this.el.focus();
+      }, 100);
     });
     
     // Handle match end sounds
@@ -126,6 +133,27 @@ Hooks.GameInput = {
     setTimeout(() => {
       this.feedback.classList.add("hidden");
     }, 300);
+  },
+  
+  // New method to scroll to and highlight words
+  highlightWord(word, status) {
+    if (!word) return;
+    
+    // Find all word elements
+    const wordElements = document.querySelectorAll('.word-item');
+    let targetElement = null;
+    
+    // Find the specific word element
+    wordElements.forEach(el => {
+      if (el.textContent.trim() === word) {
+        targetElement = el;
+      }
+    });
+    
+    if (targetElement) {
+      // Scroll the word into view
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
   }
 };
 

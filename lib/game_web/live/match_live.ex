@@ -57,7 +57,10 @@ defmodule GameWeb.MatchLive do
         is_winner: false,
         is_draw: false,
         your_score: 0,
-        opponent_score: 0
+        opponent_score: 0,
+        # Add new assigns for word tracking
+        word_statuses: %{},
+        current_target_word: nil
       )
 
     {:ok, socket}
@@ -117,6 +120,16 @@ defmodule GameWeb.MatchLive do
           ["elixir", "phoenix", "liveview", "javascript", "erlang"]
       end
 
+    # Initialize word statuses with all words set to :pending
+    word_statuses =
+      words
+      |> Enum.with_index()
+      |> Enum.map(fn {word, idx} -> {word, :pending} end)
+      |> Enum.into(%{})
+
+    # Set the first word as the current target
+    current_target_word = List.first(words)
+
     socket = push_event(socket, "match_started", %{})
 
     {:noreply,
@@ -128,7 +141,9 @@ defmodule GameWeb.MatchLive do
        opponent: opponent,
        is_player_one: is_player_one,
        match_status: :playing,
-       debug_info: "Match started with #{length(words)} words"
+       debug_info: "Match started with #{length(words)} words",
+       word_statuses: word_statuses,
+       current_target_word: current_target_word
      )}
   end
 
@@ -288,17 +303,57 @@ defmodule GameWeb.MatchLive do
         socket.assigns.current_player
       end
 
-    Logger.debug("Player #{player_id} typing: #{word}")
+    target_word = socket.assigns.current_target_word
+    Logger.debug("Player #{player_id} typing: #{word}, target: #{target_word}")
 
     case Game.Match.Match.type_word(player_id, word) do
       {:ok, _} ->
-        socket = push_event(socket, "word_result", %{result: "correct"})
-        {:noreply, assign(socket, current_input: "")}
+        # Update word status for correct word
+        updated_statuses = Map.put(socket.assigns.word_statuses, target_word, :correct)
+
+        # Find the next target word
+        current_index = Enum.find_index(socket.assigns.words, fn w -> w == target_word end)
+
+        next_target =
+          if current_index < length(socket.assigns.words) - 1 do
+            Enum.at(socket.assigns.words, current_index + 1)
+          else
+            nil
+          end
+
+        socket = push_event(socket, "word_result", %{result: "correct", word: target_word})
+
+        {:noreply,
+         assign(socket,
+           current_input: "",
+           word_statuses: updated_statuses,
+           current_target_word: next_target
+         )}
 
       {:error, reason} ->
         Logger.debug("Error typing word: #{inspect(reason)}")
-        socket = push_event(socket, "word_result", %{result: "incorrect"})
-        {:noreply, socket}
+
+        # Update word status for incorrect word
+        updated_statuses = Map.put(socket.assigns.word_statuses, target_word, :incorrect)
+
+        # Find the next target word
+        current_index = Enum.find_index(socket.assigns.words, fn w -> w == target_word end)
+
+        next_target =
+          if current_index < length(socket.assigns.words) - 1 do
+            Enum.at(socket.assigns.words, current_index + 1)
+          else
+            nil
+          end
+
+        socket = push_event(socket, "word_result", %{result: "incorrect", word: target_word})
+
+        {:noreply,
+         assign(socket,
+           current_input: "",
+           word_statuses: updated_statuses,
+           current_target_word: next_target
+         )}
     end
   end
 
