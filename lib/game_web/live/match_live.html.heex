@@ -72,28 +72,6 @@
             <% end %>
           </div>
         </div>
-        
-        <div class="player-typed-words my-3">
-          <h3 class="text-sm font-bold text-blue-300">YOUR TYPED WORDS:</h3>
-          <div class="flex flex-wrap gap-1 mt-1 max-h-20 overflow-y-auto">
-            <%= if is_map(@current_player) && @current_player.words && length(@current_player.words) > 0 do %>
-              <%= for word <- @current_player.words do %>
-                <div class="word-completed px-2 py-1 rounded bg-green-700 text-sm animate-completed-word">
-                  <%= word %>
-                </div>
-              <% end %>
-            <% else %>
-              <span class="text-blue-400 italic">None yet</span>
-            <% end %>
-          </div>
-        </div>
-        
-        <%= if @current_player && @current_player.current_word do %>
-          <div class="last-typed mt-2 flex items-center">
-            <span class="text-xs font-bold text-blue-300 mr-2">LAST TYPED:</span>
-            <span class="text-sm"><%= @current_player.current_word %></span>
-          </div>
-        <% end %>
       </div>
     </div>
     
@@ -137,40 +115,6 @@
               </div>
             <% end %>
           </div>
-        </div>
-        
-        <div class="opponent-typed-words my-3">
-          <h3 class="text-sm font-bold text-red-300">OPPONENT'S TYPED WORDS:</h3>
-          <div class="flex flex-wrap gap-1 mt-1 max-h-20 overflow-y-auto">
-            <%= if is_map(@opponent) && @opponent.words && length(@opponent.words) > 0 do %>
-              <%= for word <- @opponent.words do %>
-                <div class="word-completed px-2 py-1 rounded bg-red-700 text-sm">
-                  <%= word %>
-                </div>
-              <% end %>
-            <% else %>
-              <span class="text-red-400 italic">None yet</span>
-            <% end %>
-          </div>
-        </div>
-        
-        <div class="opponent-status p-3 rounded-lg bg-black bg-opacity-20">
-          <%= if @opponent && @opponent.current_word do %>
-            <div class="opponent-activity flex items-center">
-              <div class="typing-indicator flex items-center mr-2">
-                <div class="typing-dot animate-pulse bg-red-500 h-2 w-2 rounded-full mr-1"></div>
-                <div class="typing-dot animate-pulse bg-red-500 h-2 w-2 rounded-full mr-1" style="animation-delay: 0.2s"></div>
-                <div class="typing-dot animate-pulse bg-red-500 h-2 w-2 rounded-full" style="animation-delay: 0.4s"></div>
-              </div>
-              <span class="text-red-300 text-sm">Opponent is typing...</span>
-            </div>
-            <div class="last-typed mt-1">
-              <span class="text-xs font-bold text-red-300 mr-1">LAST TYPED:</span>
-              <span class="text-sm"><%= @opponent.current_word %></span>
-            </div>
-          <% else %>
-            <div class="text-red-300 text-sm italic">Opponent is waiting...</div>
-          <% end %>
         </div>
       </div>
     </div>
