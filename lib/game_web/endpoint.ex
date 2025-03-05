@@ -14,6 +14,12 @@ defmodule GameWeb.Endpoint do
   )
 
   plug(Plug.Static,
+    at: "/sounds",
+    from: {:game, "priv/static/sounds"},
+    gzip: false
+  )
+
+  plug(Plug.Static,
     at: "/",
     from: :game,
     gzip: false,

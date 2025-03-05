@@ -117,6 +117,8 @@ defmodule GameWeb.MatchLive do
           ["elixir", "phoenix", "liveview", "javascript", "erlang"]
       end
 
+    socket = push_event(socket, "match_started", %{})
+
     {:noreply,
      assign(socket,
        words: words,
