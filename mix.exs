@@ -69,10 +69,10 @@ defmodule Game.MixProject do
     [
       setup: ["deps.get", "assets.setup", "assets.build"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind phoenix", "esbuild phoenix"],
+      "assets.build": ["tailwind game", "esbuild game"],
       "assets.deploy": [
-        "tailwind phoenix --minify",
-        "esbuild phoenix --minify",
+        "tailwind game --minify",
+        "esbuild game --minify",
         "phx.digest"
       ]
     ]
