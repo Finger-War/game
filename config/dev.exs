@@ -7,7 +7,6 @@ config :game, GameWeb.Endpoint,
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "m12U/+mR5vxYKcHCg41rij08FTWiNtLqAPZs0XYxpJRo+ca/jhvZy9f29Q//NQ/r",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:game, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:game, ~w(--watch)]}

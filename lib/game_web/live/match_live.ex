@@ -2,9 +2,10 @@ defmodule GameWeb.MatchLive do
   use GameWeb, :live_view
   require Logger
 
-  alias GameWeb.CoreComponents
   alias Game.Match.Match
   alias Game.HordeRegistry
+
+  import GameWeb.MatchComponents
 
   @topic "game:match"
 
@@ -42,28 +43,26 @@ defmodule GameWeb.MatchLive do
       Process.send_after(self(), :check_match_progress, 3000)
     end
 
-    socket =
-      assign(socket,
-        words: default_words,
-        player_one: %{id: nil, words: [], current_word: "", score: 0},
-        player_two: %{id: nil, words: [], current_word: "", score: 0},
-        current_player: current_player,
-        opponent: nil,
-        current_input: "",
-        match_status: :waiting,
-        time_remaining: 60,
-        is_player_one: true,
-        debug_info: "Waiting for match data...",
-        is_winner: false,
-        is_draw: false,
-        your_score: 0,
-        opponent_score: 0,
-        # Add new assigns for word tracking
-        word_statuses: %{},
-        current_target_word: nil
-      )
-
-    {:ok, socket}
+    {:ok,
+     assign(socket,
+       words: default_words,
+       player_one: %{id: nil, words: [], current_word: "", score: 0},
+       player_two: %{id: nil, words: [], current_word: "", score: 0},
+       current_player: current_player,
+       opponent: nil,
+       current_input: "",
+       match_status: :waiting,
+       time_remaining: 60,
+       is_player_one: true,
+       debug_info: "Waiting for match data...",
+       is_winner: false,
+       is_draw: false,
+       your_score: 0,
+       opponent_score: 0,
+       winner_message: "",
+       word_statuses: %{},
+       current_target_word: nil
+     )}
   end
 
   def handle_info({:notify_joined, player_id}, socket) do
@@ -120,14 +119,12 @@ defmodule GameWeb.MatchLive do
           ["elixir", "phoenix", "liveview", "javascript", "erlang"]
       end
 
-    # Initialize word statuses with all words set to :pending
     word_statuses =
       words
       |> Enum.with_index()
       |> Enum.map(fn {word, idx} -> {word, :pending} end)
       |> Enum.into(%{})
 
-    # Set the first word as the current target
     current_target_word = List.first(words)
 
     socket = push_event(socket, "match_started", %{})
