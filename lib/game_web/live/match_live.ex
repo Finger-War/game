@@ -168,80 +168,81 @@ defmodule GameWeb.MatchLive do
   def handle_info(%{event: "match_finished", payload: payload}, socket) do
     Logger.info("Match finished event received: #{inspect(payload)}")
 
+    match_result = determine_match_result(payload, socket.assigns)
+    status = get_status_from_result(match_result)
+
+    socket = push_event(socket, "match_ended", %{status: status})
+
+    {:noreply, assign(socket, Map.merge(match_result, %{match_status: :finished}))}
+  end
+
+  defp determine_match_result(payload, assigns) do
     winner = Map.get(payload, :winner, :draw)
     reason = Map.get(payload, :reason, "normal")
 
-    current_player_id =
-      if is_map(socket.assigns.current_player) do
-        socket.assigns.current_player.id
-      else
-        socket.assigns.current_player
-      end
+    current_player_id = extract_player_id(assigns.current_player)
 
     winner_id = if is_map(winner), do: winner.id, else: nil
     is_draw = winner == :draw
     is_winner = not is_draw and winner_id == current_player_id
 
-    your_score =
-      if is_map(socket.assigns.current_player) and is_list(socket.assigns.current_player.words) do
-        length(socket.assigns.current_player.words)
-      else
-        0
-      end
-
-    opponent_score =
-      if is_map(socket.assigns.opponent) and is_list(socket.assigns.opponent.words) do
-        length(socket.assigns.opponent.words)
-      else
-        0
-      end
+    your_score = calculate_score(assigns.current_player)
+    opponent_score = calculate_score(assigns.opponent)
 
     winner_message =
-      case {reason, is_draw, is_winner} do
-        {_, true, _} ->
-          "It's a draw! Both players tied with #{your_score} words."
-
-        {"time_up", _, true} ->
-          "Time's up! You won by typing #{your_score} words!"
-
-        {"time_up", _, false} ->
-          "Time's up! Opponent won by typing #{opponent_score} words."
-
-        {_, _, true} ->
-          "You won by typing #{your_score} words!"
-
-        {_, _, false} ->
-          "Opponent won by typing #{opponent_score} words."
-      end
+      generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score)
 
     Logger.info("Match ended: #{winner_message}")
 
-    status =
-      cond do
-        is_winner -> "victory"
-        is_draw -> "draw"
-        true -> "defeat"
-      end
+    %{
+      winner: winner,
+      winner_message: winner_message,
+      is_winner: is_winner,
+      is_draw: is_draw,
+      your_score: your_score,
+      opponent_score: opponent_score
+    }
+  end
 
-    socket = push_event(socket, "match_ended", %{status: status})
+  defp extract_player_id(player) do
+    if is_map(player), do: player.id, else: player
+  end
 
-    {:noreply,
-     socket
-     |> assign(
-       match_status: :finished,
-       winner: winner,
-       winner_message: winner_message,
-       is_winner: is_winner,
-       is_draw: is_draw,
-       your_score: your_score,
-       opponent_score: opponent_score
-     )}
+  defp calculate_score(player) do
+    if is_map(player) and is_list(player.words), do: length(player.words), else: 0
+  end
+
+  defp generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score) do
+    case {reason, is_draw, is_winner} do
+      {_, true, _} ->
+        "It's a draw! Both players tied with #{your_score} words."
+
+      {"time_up", _, true} ->
+        "Time's up! You won by typing #{your_score} words!"
+
+      {"time_up", _, false} ->
+        "Time's up! Opponent won by typing #{opponent_score} words."
+
+      {_, _, true} ->
+        "You won by typing #{your_score} words!"
+
+      {_, _, false} ->
+        "Opponent won by typing #{opponent_score} words."
+    end
+  end
+
+  defp get_status_from_result(%{is_winner: is_winner, is_draw: is_draw}) do
+    cond do
+      is_winner -> "victory"
+      is_draw -> "draw"
+      true -> "defeat"
+    end
   end
 
   def handle_info(%{event: "timer_update", payload: %{time_remaining: time}}, socket) do
     Logger.debug("Timer update: #{time}s remaining")
 
-    socket = if time == 10, do: push_event(socket, "time_warning", %{}), else: socket
+    socket = if time == 8, do: push_event(socket, "time_warning", %{}), else: socket
 
     updated_socket =
       if socket.assigns.match_status == :waiting do
@@ -305,10 +306,8 @@ defmodule GameWeb.MatchLive do
 
     case Game.Match.Match.type_word(player_id, word) do
       {:ok, _} ->
-        # Update word status for correct word
         updated_statuses = Map.put(socket.assigns.word_statuses, target_word, :correct)
 
-        # Find the next target word
         current_index = Enum.find_index(socket.assigns.words, fn w -> w == target_word end)
 
         next_target =
@@ -330,10 +329,8 @@ defmodule GameWeb.MatchLive do
       {:error, reason} ->
         Logger.debug("Error typing word: #{inspect(reason)}")
 
-        # Update word status for incorrect word
         updated_statuses = Map.put(socket.assigns.word_statuses, target_word, :incorrect)
 
-        # Find the next target word
         current_index = Enum.find_index(socket.assigns.words, fn w -> w == target_word end)
 
         next_target =

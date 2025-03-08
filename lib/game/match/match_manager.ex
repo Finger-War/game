@@ -29,7 +29,6 @@ defmodule Game.Match.MatchManager do
   end
 
   def handle_call({:create_match, player_one, player_two}, _from, state) do
-    # Check if either player is already in a match
     player_one_in_match = Game.HordeRegistry.lookup_player(player_one) != :error
     player_two_in_match = Game.HordeRegistry.lookup_player(player_two) != :error
 
@@ -43,7 +42,6 @@ defmodule Game.Match.MatchManager do
         {:reply, {:error, :player_already_in_match}, state}
 
       true ->
-        # Both players are free, create the match
         result = Game.Match.MatchSupervisor.start_match(player_one, player_two)
 
         case result do

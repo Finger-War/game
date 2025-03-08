@@ -81,34 +81,26 @@ defmodule Game.Match.Match do
       else
         Logger.info("Initializing match between #{player_one} and #{player_two}")
 
-        # Register players for callbacks
         HordeRegistry.register_player(player_one, self())
         HordeRegistry.register_player(player_two, self())
 
-        # Generate word list - ensure we have words
         word_list =
           case Enum.take_random(@words, 10) do
-            # Fallback if random selection fails
             [] -> Enum.take(@words, 10)
             list -> list
           end
 
-        # Log this for debugging
         Logger.info("Generated word list: #{inspect(word_list)}")
 
-        # Create player structures with IDs
         player_one_data = %{id: player_one, words: [], current_word: "", score: 0}
         player_two_data = %{id: player_two, words: [], current_word: "", score: 0}
 
-        # Send match data to all clients - IMMEDIATELY
         Logger.info("Broadcasting match_started event with #{length(word_list)} words")
         broadcast_match_started(player_one_data, player_two_data, word_list)
 
-        # Setup timers
         schedule_timer()
         finish_timer = Process.send_after(self(), :finish, @duration)
 
-        # Return state
         {:ok,
          %{
            start_time: :os.system_time(:millisecond),
@@ -157,16 +149,13 @@ defmodule Game.Match.Match do
   end
 
   def handle_call(:get_state, _from, state) do
-    # When a player reconnects or loads the match page, send the current state
     if Map.has_key?(state, :player_one) && Map.has_key?(state, :player_two) do
-      # Re-broadcast match data to the requesting client
       GameWeb.Endpoint.broadcast(@topic, "match_started", %{
         player_one: state.player_one,
         player_two: state.player_two,
         words: state.words
       })
 
-      # Also broadcast the current timer
       GameWeb.Endpoint.broadcast(@topic, "timer_update", %{
         time_remaining: div(state.time_remaining, 1000)
       })
@@ -285,7 +274,6 @@ defmodule Game.Match.Match do
     Process.send_after(self(), :timer_tick, @timer_interval)
   end
 
-  # Check if player is already in a match
   defp player_in_match?(player_id) do
     case HordeRegistry.lookup_player(player_id) do
       {:ok, _pid} -> true
@@ -293,12 +281,10 @@ defmodule Game.Match.Match do
     end
   end
 
-  # Helper to unregister a player
   defp unregister_player(player_id) do
     HordeRegistry.unregister_player(player_id)
   end
 
-  # Process words and calculate results
   defp calculate_result(words) do
     words
     |> Enum.group_by(
@@ -307,7 +293,6 @@ defmodule Game.Match.Match do
     )
   end
 
-  # Better function for calculating words completed
   defp calculate_words_completed(state) do
     %{
       state.player_one.id => state.player_one.words,
@@ -315,7 +300,6 @@ defmodule Game.Match.Match do
     }
   end
 
-  # Determinar vencedor com base nas pontuações - garantir que o empate seja tratado corretamente
   defp determine_winner(words_completed, player_one, player_two) do
     player_one_score = length(Map.get(words_completed, player_one.id, []))
     player_two_score = length(Map.get(words_completed, player_two.id, []))
@@ -327,16 +311,13 @@ defmodule Game.Match.Match do
     end
   end
 
-  # Helper to broadcast match started event
   defp broadcast_match_started(player_one, player_two, words) do
-    # Broadcast directly to match topic
     GameWeb.Endpoint.broadcast(@topic, "match_started", %{
       player_one: player_one,
       player_two: player_two,
       words: words
     })
 
-    # Also broadcast to each player to ensure they receive it
     broadcast_to_player(player_one.id, "match_started", %{
       player_one: player_one,
       player_two: player_two,
@@ -350,7 +331,6 @@ defmodule Game.Match.Match do
     })
   end
 
-  # Helper to broadcast directly to a player's topic
   defp broadcast_to_player(player_id, event, payload) do
     GameWeb.Endpoint.broadcast("player:#{player_id}", event, payload)
   end
