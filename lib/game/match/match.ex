@@ -285,14 +285,6 @@ defmodule Game.Match.Match do
     HordeRegistry.unregister_player(player_id)
   end
 
-  defp calculate_result(words) do
-    words
-    |> Enum.group_by(
-      fn {player, _word} -> player end,
-      fn {_player, word} -> word end
-    )
-  end
-
   defp calculate_words_completed(state) do
     %{
       state.player_one.id => state.player_one.words,

@@ -35,7 +35,6 @@ defmodule Game.Match.MatchSupervisor do
   def delete_match(player_one, player_two) do
     Logger.info("Deleting match between #{player_one} and #{player_two}")
 
-    # Try to find the match PID through the registry
     key = {:match, player_one, player_two}
 
     case Horde.Registry.lookup(Game.HordeRegistry, key) do
@@ -49,7 +48,6 @@ defmodule Game.Match.MatchSupervisor do
     end
   end
 
-  # Handle the case when a node joins or leaves the cluster
   def handle_topology_change(nodes) do
     Logger.info("Topology change detected: #{inspect(nodes)}")
     set_members(members())

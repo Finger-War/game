@@ -1,8 +1,8 @@
 defmodule GameWeb.MatchComponents do
   use Phoenix.Component
-  alias Phoenix.LiveView.JS
 
   attr(:match_status, :atom, required: true)
+  attr(:time_remaining, :integer, required: true)
 
   def game_header(assigns) do
     ~H"""

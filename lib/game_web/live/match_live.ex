@@ -2,9 +2,6 @@ defmodule GameWeb.MatchLive do
   use GameWeb, :live_view
   require Logger
 
-  alias Game.Match.Match
-  alias Game.HordeRegistry
-
   import GameWeb.MatchComponents
 
   @topic "game:match"
@@ -122,7 +119,7 @@ defmodule GameWeb.MatchLive do
     word_statuses =
       words
       |> Enum.with_index()
-      |> Enum.map(fn {word, idx} -> {word, :pending} end)
+      |> Enum.map(fn {word, _} -> {word, :pending} end)
       |> Enum.into(%{})
 
     current_target_word = List.first(words)
@@ -274,14 +271,6 @@ defmodule GameWeb.MatchLive do
     end
   end
 
-  def handle_info(%{event: "timer_update", payload: %{time_remaining: time}}, socket) do
-    if time <= 0 and socket.assigns.match_status == :playing do
-      Logger.info("Timer reached zero - match should end soon")
-    end
-
-    {:noreply, assign(socket, time_remaining: time)}
-  end
-
   def handle_info(:check_match_progress, socket) do
     if socket.assigns.match_status == :waiting and length(socket.assigns.words) > 0 and
          socket.assigns.words != ["waiting", "for", "match", "to", "start"] do
@@ -383,10 +372,6 @@ defmodule GameWeb.MatchLive do
     Logger.info("Debug info: #{inspect(debug)}")
 
     {:noreply, socket}
-  end
-
-  defp determine_current_player(_socket, player_one, _player_two) do
-    player_one.id
   end
 
   defp check_ongoing_match(player_id) do
