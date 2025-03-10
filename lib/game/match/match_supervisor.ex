@@ -54,6 +54,6 @@ defmodule Game.Match.MatchSupervisor do
   end
 
   def set_members(members) do
-    Horde.DynamicSupervisor.set_members(__MODULE__, members)
+    Horde.Cluster.set_members(__MODULE__, members)
   end
 end

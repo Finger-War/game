@@ -173,69 +173,6 @@ defmodule GameWeb.MatchLive do
     {:noreply, assign(socket, Map.merge(match_result, %{match_status: :finished}))}
   end
 
-  defp determine_match_result(payload, assigns) do
-    winner = Map.get(payload, :winner, :draw)
-    reason = Map.get(payload, :reason, "normal")
-
-    current_player_id = extract_player_id(assigns.current_player)
-
-    winner_id = if is_map(winner), do: winner.id, else: nil
-    is_draw = winner == :draw
-    is_winner = not is_draw and winner_id == current_player_id
-
-    your_score = calculate_score(assigns.current_player)
-    opponent_score = calculate_score(assigns.opponent)
-
-    winner_message =
-      generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score)
-
-    Logger.info("Match ended: #{winner_message}")
-
-    %{
-      winner: winner,
-      winner_message: winner_message,
-      is_winner: is_winner,
-      is_draw: is_draw,
-      your_score: your_score,
-      opponent_score: opponent_score
-    }
-  end
-
-  defp extract_player_id(player) do
-    if is_map(player), do: player.id, else: player
-  end
-
-  defp calculate_score(player) do
-    if is_map(player) and is_list(player.words), do: length(player.words), else: 0
-  end
-
-  defp generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score) do
-    case {reason, is_draw, is_winner} do
-      {_, true, _} ->
-        "It's a draw! Both players tied with #{your_score} words."
-
-      {"time_up", _, true} ->
-        "Time's up! You won by typing #{your_score} words!"
-
-      {"time_up", _, false} ->
-        "Time's up! Opponent won by typing #{opponent_score} words."
-
-      {_, _, true} ->
-        "You won by typing #{your_score} words!"
-
-      {_, _, false} ->
-        "Opponent won by typing #{opponent_score} words."
-    end
-  end
-
-  defp get_status_from_result(%{is_winner: is_winner, is_draw: is_draw}) do
-    cond do
-      is_winner -> "victory"
-      is_draw -> "draw"
-      true -> "defeat"
-    end
-  end
-
   def handle_info(%{event: "timer_update", payload: %{time_remaining: time}}, socket) do
     Logger.debug("Timer update: #{time}s remaining")
 
@@ -387,6 +324,69 @@ defmodule GameWeb.MatchLive do
 
       _ ->
         Logger.info("No ongoing match found for player #{player_id}")
+    end
+  end
+
+  defp determine_match_result(payload, assigns) do
+    winner = Map.get(payload, :winner, :draw)
+    reason = Map.get(payload, :reason, "normal")
+
+    current_player_id = extract_player_id(assigns.current_player)
+
+    winner_id = if is_map(winner), do: winner.id, else: nil
+    is_draw = winner == :draw
+    is_winner = not is_draw and winner_id == current_player_id
+
+    your_score = calculate_score(assigns.current_player)
+    opponent_score = calculate_score(assigns.opponent)
+
+    winner_message =
+      generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score)
+
+    Logger.info("Match ended: #{winner_message}")
+
+    %{
+      winner: winner,
+      winner_message: winner_message,
+      is_winner: is_winner,
+      is_draw: is_draw,
+      your_score: your_score,
+      opponent_score: opponent_score
+    }
+  end
+
+  defp extract_player_id(player) do
+    if is_map(player), do: player.id, else: player
+  end
+
+  defp calculate_score(player) do
+    if is_map(player) and is_list(player.words), do: length(player.words), else: 0
+  end
+
+  defp generate_winner_message(reason, is_draw, is_winner, your_score, opponent_score) do
+    case {reason, is_draw, is_winner} do
+      {_, true, _} ->
+        "It's a draw! Both players tied with #{your_score} words."
+
+      {"time_up", _, true} ->
+        "Time's up! You won by typing #{your_score} words!"
+
+      {"time_up", _, false} ->
+        "Time's up! Opponent won by typing #{opponent_score} words."
+
+      {_, _, true} ->
+        "You won by typing #{your_score} words!"
+
+      {_, _, false} ->
+        "Opponent won by typing #{opponent_score} words."
+    end
+  end
+
+  defp get_status_from_result(%{is_winner: is_winner, is_draw: is_draw}) do
+    cond do
+      is_winner -> "victory"
+      is_draw -> "draw"
+      true -> "defeat"
     end
   end
 end
