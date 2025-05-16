@@ -9,14 +9,12 @@ secret_key_base =
       You can generate one by calling: mix phx.gen.secret
       """
     else
-      # Default keys for dev/test if not set via env var
       %{
         dev: "m12U/+mR5vxYKcHCg41rij08FTWiNtLqAPZs0XYxpJRo+ca/jhvZy9f29Q//NQ/r",
         test: "zbfG39uJK2UaB/EFEiyHx/7xWdEwfl63rsjnQv98umlAXjESFYizIbIZ09JGIEXx"
       }[config_env()]
     end
 
-# Configure the endpoint with the secret key base
 config :game, GameWeb.Endpoint, secret_key_base: secret_key_base
 
 if System.get_env("PHX_SERVER") do
@@ -34,7 +32,6 @@ if config_env() == :prod do
       port: port
     ]
 
-  # Configure clustering for Fly.io
   app_name = System.get_env("FLY_APP_NAME")
 
   if app_name != nil do
@@ -46,6 +43,16 @@ if config_env() == :prod do
             polling_interval: 5_000,
             query: "#{app_name}.internal",
             node_basename: app_name
+          ]
+        ]
+      ]
+  else
+    config :libcluster,
+      topologies: [
+        local: [
+          strategy: Cluster.Strategy.LocalEpmd,
+          config: [
+            hostname: :auto
           ]
         ]
       ]

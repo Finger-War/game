@@ -21,6 +21,16 @@ config :game, GameWeb.Endpoint,
     ]
   ]
 
+config :libcluster,
+  topologies: [
+    local: [
+      strategy: Cluster.Strategy.LocalEpmd,
+      config: [
+        hostname: :auto
+      ]
+    ]
+  ]
+
 config :game, dev_routes: true
 
 config :logger, :console, format: "[$level] $message\n"

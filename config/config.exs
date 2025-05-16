@@ -3,21 +3,6 @@ import Config
 config :game,
   generators: [timestamp_type: :utc_datetime]
 
-app_name =
-  System.get_env("FLY_APP_NAME")
-
-config :libcluster,
-  topologies: [
-    fly6pn: [
-      strategy: Cluster.Strategy.DNSPoll,
-      config: [
-        polling_interval: 5_000,
-        query: "#{app_name}.internal",
-        node_basename: app_name
-      ]
-    ]
-  ]
-
 config :game, GameWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,

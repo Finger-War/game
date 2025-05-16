@@ -10,6 +10,7 @@ kill_signal = 'SIGTERM'
 [build]
 
 [env]
+  MIX_ENV = 'prod'
   PHX_HOST = 'fingerwar.com.br'
   PORT = '8080'
   PHX_SERVER = 'true'
