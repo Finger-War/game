@@ -35,7 +35,7 @@ defmodule Game.MixProject do
     [
       {:bandit, "~> 1.5"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:dns_cluster, "~> 0.1.3"},
+      {:dns_cluster, "~> 0.2.0"},
       {:horde, "~> 0.9.0"},
       {:phoenix, "~> 1.7.18"},
       {:phoenix_live_dashboard, "~> 0.8.3"},

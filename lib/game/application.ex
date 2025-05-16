@@ -8,7 +8,7 @@ defmodule Game.Application do
 
   @impl true
   def start(_type, _args) do
-    topologies = Application.get_env(:libcluster, :topologies)
+    topologies = Application.get_env(:libcluster, :topologies) || []
 
     children = [
       {Cluster.Supervisor, [topologies, [name: Game.ClusterSupervisor]]},
@@ -33,7 +33,6 @@ defmodule Game.Application do
     :ok
   end
 
-  @impl true
   def start_phase(:queue_phase, _start_type, _args) do
     :timer.sleep(:rand.uniform(1000))
 

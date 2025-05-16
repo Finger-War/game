@@ -1,0 +1,41 @@
+# fly.toml app configuration file generated for game-spring-thunder-4150 on 2025-05-16T12:05:48-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'game-spring-thunder-4150'
+primary_region = 'gru'
+kill_signal = 'SIGTERM'
+
+[build]
+
+[env]
+  PHX_HOST = 'game-spring-thunder-4150.fly.dev'
+  PORT = '8080'
+  PHX_SERVER = 'true'
+  DNS_CLUSTER_QUERY = 'game-spring-thunder-4150.internal'
+  # O cookie será definido em rel/env.sh.eex
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+  [http_service.concurrency]
+    type = 'connections'
+    hard_limit = 1000
+    soft_limit = 1000
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+# Habilitar fly proxy protocol para comunicação entre nós
+[experimental]
+  auto_rollback = true
+  enable_consul = true
+  private_network = true

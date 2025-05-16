@@ -3,25 +3,17 @@ import Config
 config :game,
   generators: [timestamp_type: :utc_datetime]
 
+app_name =
+  System.get_env("FLY_APP_NAME")
+
 config :libcluster,
   topologies: [
-    Dynamic_Game: [
-      strategy: Cluster.Strategy.Gossip,
+    fly6pn: [
+      strategy: Cluster.Strategy.DNSPoll,
       config: [
-        port: 45892,
-        multicast_addr: "255.255.255.255",
-        multicast_ttl: 1,
-        if_addr: {0, 0, 0, 0},
-        ifaces: :default
-      ]
-    ],
-    game_cluster: [
-      strategy: Cluster.Strategy.Gossip,
-      config: [
-        port: 45892,
-        if_addr: "0.0.0.0",
-        multicast_addr: "230.1.1.1",
-        multicast_ttl: 1
+        polling_interval: 5_000,
+        query: "#{app_name}.internal",
+        node_basename: app_name
       ]
     ]
   ]
