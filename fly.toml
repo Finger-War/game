@@ -10,7 +10,7 @@ kill_signal = 'SIGTERM'
 [build]
 
 [env]
-  PHX_HOST = 'game-spring-thunder-4150.fly.dev'
+  PHX_HOST = 'fingerwar.com.br'
   PORT = '8080'
   PHX_SERVER = 'true'
   DNS_CLUSTER_QUERY = 'game-spring-thunder-4150.internal'
